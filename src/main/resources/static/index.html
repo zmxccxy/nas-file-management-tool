@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nas file management tool</title>
+    <link rel="icon" href="favicon.webp" type="image/webp">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/jquery-3.6.4.min.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            animation: gradientMove 60s ease-in-out infinite;
+        }
+
+        .container {
+            max-width: 95%;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes wave {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes gradientMove2 {
+            0% {
+                background-position: 0 0;
+            }
+            25% {
+                background-position: 100% 0;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            75% {
+                background-position: 0 100%;
+            }
+            100% {
+                background-position: 0 0;
+            }
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0 0; /* 从左上角开始 */
+            }
+            10% {
+                background-position: 100% 0; /* 水平向右 */
+            }
+            20% {
+                background-position: 0 50%; /* 水平回到左侧，垂直向下 */
+            }
+            30% {
+                background-position: 50% 50%; /* 水平居中，垂直居中 */
+            }
+            40% {
+                background-position: 100% 100%; /* 水平右，垂直下 */
+            }
+            50% {
+                background-position: 0 100%; /* 水平回到左侧，垂直下 */
+            }
+            60% {
+                background-position: 50% 0; /* 水平居中，垂直上 */
+            }
+            70% {
+                background-position: 100% 50%; /* 水平右，垂直居中 */
+            }
+            80% {
+                background-position: 0 0; /* 返回左上角 */
+            }
+            90% {
+                background-position: 50% 100%; /* 水平居中，垂直下 */
+            }
+            100% {
+                background-position: 0 0; /* 恢复到起始位置 */
+            }
+        }
+
+        .wave-animation {
+            animation: wave 1s infinite;
+        }
+
+        .alert {
+            transition: opacity 1s ease-in-out;
+        }
+
+        h1 {
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), /* 轻微的阴影 */ 0 2px 4px rgba(0, 0, 0, 0.2), /* 更明显的阴影 */ 0 4px 8px rgba(0, 0, 0, 0.3); /* 强烈的阴影 */
+        }
+
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="text-center text-white py-3">
+    <h1 class="display-1" style="font-weight: bold;">Nas file management tool</h1>
+    <span class="badge text-bg-primary">V 0.0.1</span>
+</header>
+
+<div class="container">
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs" id="fileOperationsTabs" role="tablist" style="font-weight: bold">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="replace-tab" data-bs-toggle="tab" data-bs-target="#replace" type="button" role="tab" aria-controls="replace" aria-selected="true">替换</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="create-move-tab" data-bs-toggle="tab" data-bs-target="#create-move" type="button" role="tab" aria-controls="create-move" aria-selected="false">新建/移动</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="delete-tab" data-bs-toggle="tab" data-bs-target="#delete" type="button" role="tab" aria-controls="delete" aria-selected="false">删除</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="duplicate-tab" data-bs-toggle="tab" data-bs-target="#duplicate" type="button" role="tab" aria-controls="duplicate" aria-selected="false">去重</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="clone-tab" data-bs-toggle="tab" data-bs-target="#clone" type="button" role="tab" aria-controls="clone" aria-selected="false">克隆</button>
+        </li>
+    </ul>
+
+    <!-- Tabs Content -->
+    <div class="tab-content" id="fileOperationsTabsContent">
+        <!-- 替换 -->
+        <div class="tab-pane fade show active" id="replace" role="tabpanel" aria-labelledby="replace-tab">
+            <form id="replaceForm" class="row g-3 mt-4">
+                <div class="col-auto">
+                    <label class="form-control-plaintext">在</label>
+                </div>
+                <div class="col-auto">
+                    <label for="path" class="visually-hidden">路径</label>
+                    <input name="path" type="text" class="form-control" id="path" placeholder="哪个">
+                </div>
+                <div class="col-auto">
+                    <label class="form-control-plaintext">路径下</label>
+                </div>
+                <div class="col-auto">
+                    <button type="button" id="replaceQueryButton" class="btn btn-primary mb-3">查询</button>
+                </div>
+                <div class="col-auto">
+                    <label class="form-control-plaintext">把所有文件名中的</label>
+                </div>
+                <div class="col-auto">
+                    <label for="from" class="visually-hidden">替换内容</label>
+                    <input name="from" type="text" class="form-control" id="from" placeholder="什么">
+                </div>
+                <div class="col-auto">
+                    <label class="form-control-plaintext">替换成</label>
+                </div>
+                <div class="col-auto">
+                    <label for="to" class="visually-hidden">目标内容</label>
+                    <input name="to" type="text" class="form-control" id="to" placeholder="什么">
+                </div>
+                <div class="col-auto">
+                    <button type="button" id="replaceButton" class="btn btn-primary mb-3">替换</button>
+                </div>
+                <div>
+                    <div class="form-check form-check-inline" style="padding-left: 0">
+                        文件类型(不勾选默认所有类型的文件):
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="replaceFileType" type="checkbox" value="mp4" id="mp4">
+                        <label class="form-check-label" for="mp4">
+                            MP4
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="replaceFileType" type="checkbox" value="avi" id="avi">
+                        <label class="form-check-label" for="avi">
+                            AVI
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="replaceFileType" type="checkbox" value="iso" id="iso">
+                        <label class="form-check-label" for="iso">
+                            ISO
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="replaceFileType" type="checkbox" value="mkv" id="mkv">
+                        <label class="form-check-label" for="mkv">
+                            MKV
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="replaceFileType" type="checkbox" value="mov" id="mov">
+                        <label class="form-check-label" for="mov">
+                            MOV
+                        </label>
+                    </div>
+                </div>
+            </form>
+            <h6 class="mt-4" style="font-weight: bold">结果</h6>
+            <div class="alert alert-success d-none" role="alert" id="errorAlert" aria-live="polite"></div>
+            <div class="card">
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">替换前</th>
+                            <th scope="col">替换后</th>
+                            <th scope="col">类型</th>
+                            <th scope="col">大小</th>
+                            <th scope="col">读权限/写权限</th>
+                            <th scope="col">最后更新时间</th>
+                        </tr>
+                        </thead>
+                        <tbody id="replaceResults"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新建和移动 -->
+        <div class="tab-pane fade" id="create-move" role="tabpanel" aria-labelledby="create-move-tab">
+            <form class="row g-3 mt-4">
+                <div class="col-auto">
+                    <label class="form-control-plaintext">在</label>
+                </div>
+                <div class="col-auto">
+                    <label for="createMovePath" class="visually-hidden">哪个路径</label>
+                    <input id="createMovePath" name="createMovePath" type="text" class="form-control" placeholder="哪个" value="">
+                </div>
+                <div class="col-auto">
+                    <label class="form-control-plaintext">路径下的文件夹/文件</label>
+                </div>
+                <div class="col-auto">
+                    <button id="createMoveQueryButton" type="button" class="btn btn-primary">查询</button>
+                </div>
+                <div class="col-auto">
+                    <label class="form-control-plaintext">根据文件名创建文件夹并将文件移动到文件夹里</label>
+                </div>
+                <div class="col-auto">
+                    <button id="createMoveButton" type="button" class="btn btn-primary">新建&移动</button>
+                </div>
+            </form>
+            <h6 class="mt-4" style="font-weight: bold">结果</h6>
+            <div id="createMoveAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
+            <div class="card">
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">名称</th>
+                            <th scope="col">类型</th>
+                            <th scope="col">大小</th>
+                            <th scope="col">读权限/写权限</th>
+                            <th scope="col">最后更新时间</th>
+                        </tr>
+                        </thead>
+                        <tbody id="createMoveResults"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 删除 -->
+        <div class="tab-pane fade" id="delete" role="tabpanel" aria-labelledby="delete-tab">
+            <form class="row g-3 mt-4">
+                <div class="col-auto">
+                    <label class="form-control-plaintext">在</label>
+                </div>
+                <div class="col-auto">
+                    <label for="deleteQueryPath" class="visually-hidden">哪个路径</label>
+                    <input id="deleteQueryPath" name="createMovePath" type="text" class="form-control" placeholder="哪个">
+                </div>
+                <div class="col-auto">
+                    <label class="form-control-plaintext">路径下的文件夹/文件</label>
+                </div>
+                <div class="col-auto">
+                    <button id="deleteQueryButton" type="button" class="btn btn-primary">查询</button>
+                </div>
+            </form>
+            <h6 class="mt-4" style="font-weight: bold">结果</h6>
+            <div id="deleteAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
+            <div class="card">
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">名称</th>
+                            <th scope="col">类型</th>
+                            <th scope="col">大小</th>
+                            <th scope="col">读权限/写权限</th>
+                            <th scope="col">最后更新时间</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="deleteResults"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 去重 -->
+        <div class="tab-pane fade" id="duplicate" role="tabpanel" aria-labelledby="duplicate-tab">
+            <form class="row g-3 mt-4">
+                <div class="col-auto">
+                    <label class="form-control-plaintext">在</label>
+                </div>
+                <div class="col-auto">
+                    <label for="duplicateQueryPath" class="visually-hidden">哪个路径</label>
+                    <input type="text" name="duplicateQueryPath" class="form-control" id="duplicateQueryPath" placeholder="哪个">
+                </div>
+                <div class="col-auto">
+                    <label class="form-control-plaintext">路径下的重复文件</label>
+                </div>
+                <div class="col-auto">
+                    <button id="duplicateQueryButton" type="button" class="btn btn-primary">查询</button>
+                </div>
+            </form>
+            <h6 class="mt-4" style="font-weight: bold">结果</h6>
+            <div id="duplicateAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
+            <div class="card">
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">SHA256</th>
+                            <th scope="col">名称</th>
+                            <th scope="col">类型</th>
+                            <th scope="col">大小</th>
+                            <th scope="col">读权限/写权限</th>
+                            <th scope="col">最后更新时间</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="duplicateResults"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 克隆 -->
+        <div class="tab-pane fade" id="clone" role="tabpanel" aria-labelledby="clone-tab">
+            <form class="mt-4">
+                <div class="mb-3">
+                    <label for="cloneFromPath" class="form-label">源路径：</label>
+                    <input type="text" class="form-control" id="cloneFromPath" placeholder="源路径">
+                </div>
+                <div class="mb-3">
+                    <label for="cloneToPath" class="form-label">目标：</label>
+                    <input type="text" class="form-control" id="cloneToPath" placeholder="目标路径">
+                </div>
+                <button type="button" class="btn btn-danger">克隆</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="text-center text-white py-3">
+    <p>&copy; 2024 Nas文件管理工具</p>
+</footer>
+<script>
+    // 生成一个 0 到 360 度之间的随机角度
+    function getRandomAngle() {
+        return Math.floor(Math.random() * 360) + 'deg';
+    }
+
+    // 应用随机角度的渐变背景
+    function applyRandomGradient() {
+        const angle = getRandomAngle();
+        document.body.style.background = `linear-gradient(${angle}, #ff9a9e, #fad0c4, #fbc2eb, #a1c4fd, #c2e9fb, #ffeb3b)`;
+        document.body.style.backgroundSize = "365% 365%";
+    }
+
+    // 初始应用随机角度的渐变背景
+    applyRandomGradient();
+
+    // 可选：每次点击页面时更新渐变背景
+    // document.body.addEventListener('click', applyRandomGradient);
+</script>
+<!-- JavaScript for AJAX with jQuery -->
+<script>
+    $(document).ready(function () {
+        <!-- 去重（删除） -->
+        $(document).on('click', '#duplicateResults .btn-danger', function () {
+            const $button = $(this);
+            const $duplicateAlert = $('#duplicateAlert');
+            const deletePath = $button.val();
+
+            const originalContent = $button.html();
+            $button.prop('disabled', true).html('<img src="img/loading3.gif" alt="加载中..." style="width: 32px;">');
+
+            const requestData = {deletePath};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/duplicate',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $duplicateAlert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        $button.closest('tr').remove();
+                    }
+                },
+                error: function () {
+                    alert('删除请求失败，请稍后再试！');
+                },
+                complete: function () {
+                    $button.prop('disabled', false).html(originalContent);
+                }
+            });
+        });
+
+        <!-- 去重，查询列表 -->
+        $('#duplicateQueryButton').click(function () {
+            const $button = $(this);
+            const $deleteAlert = $('#duplicateAlert');
+            const duplicateQueryPath = $('#duplicateQueryPath').val();
+
+            $button.prop('disabled', true).addClass('wave-animation');
+            $deleteAlert.addClass('d-none').text('');
+            $('#duplicateResults').empty();
+
+            const requestData = {duplicateQueryPath};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/duplicateQuery',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $deleteAlert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        const data = response.data;
+                        $('#deleteResults').empty();
+                        data.forEach(function (item, index) {
+                            const row = `<tr>
+                                <th>${index + 1}</th>
+                                <td>${item.sha256}</td>
+                                <td>${item.oldFileName}</td>
+                                <td>${item.fileSize}</td>
+                                <td>${item.fileType}</td>
+                                <td>${item.canReadString} / ${item.canWriteString}</td>
+                                <td>${item.updateTime}</td>
+                                <td><button id="duplicateButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
+                            </tr>`;
+                            $('#duplicateResults').append(row);
+                        });
+                    }
+                },
+                complete: function () {
+                    $button.prop('disabled', false).removeClass('wave-animation');
+                }
+            });
+        });
+
+        <!-- 删除 -->
+        $(document).on('click', '#deleteResults .btn-danger', function () {
+            const $button = $(this);
+            const $deleteAlert = $('#deleteAlert');
+            const deletePath = $button.val();
+
+            // $button.prop('disabled', true).text('删除中...');
+            const originalContent = $button.html();
+            $button.prop('disabled', true).html('<img src="img/loading3.gif" alt="加载中..." style="width: 32px;">');
+
+            const requestData = {deletePath};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/delete',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $deleteAlert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        $button.closest('tr').remove();
+                    }
+                },
+                error: function () {
+                    alert('删除请求失败，请稍后再试！');
+                },
+                complete: function () {
+                    // $button.prop('disabled', false).text('删除');
+                    $button.prop('disabled', false).html(originalContent);
+                }
+            });
+        });
+
+        <!-- 删除，查询列表 -->
+        $('#deleteQueryButton').click(function () {
+            const $button = $(this);
+            const $deleteAlert = $('#deleteAlert');
+            const deleteQueryPath = $('#deleteQueryPath').val();
+
+            $button.prop('disabled', true).addClass('wave-animation');
+            $deleteAlert.addClass('d-none').text('');
+            $('#replaceResults').empty();
+
+            const requestData = {deleteQueryPath};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/deleteQuery',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $deleteAlert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        const data = response.data;
+                        $('#deleteResults').empty();
+                        data.forEach(function (item, index) {
+                            const row = `<tr>
+                                <th scope="row">${index + 1}</th>
+                                <td>${item.oldFileName}</td>
+                                <td>${item.fileSize}</td>
+                                <td>${item.fileType}</td>
+                                <td>${item.canReadString} / ${item.canWriteString}</td>
+                                <td>${item.updateTime}</td>
+                                <td><button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
+                            </tr>`;
+                            $('#deleteResults').append(row);
+                        });
+                    }
+                },
+                complete: function () {
+                    $button.prop('disabled', false).removeClass('wave-animation');
+                }
+            });
+        });
+
+        <!-- 替换，列表 -->
+        $('#replaceQueryButton').click(function () {
+            const $button = $(this);
+            const $errorAlert = $('#errorAlert');
+            const path = $('#path').val();
+
+            $button.prop('disabled', true).addClass('wave-animation');
+            $errorAlert.addClass('d-none').text('');
+            $('#replaceResults').empty();
+
+            const requestData = {path};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/replaceQuery',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $errorAlert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        const data = response.data;
+                        $('#replaceResults').empty();
+                        data.forEach(function (item, index) {
+                            const $newFileName = item.newFileName || '-';
+                            const row = `<tr>
+                                <th scope="row">${index + 1}</th>
+                                <td>${item.oldFileName}</td>
+                                <td>${$newFileName}</td>
+                                <td>${item.fileType}</td>
+                                <td>${item.fileSize}</td>
+                                <td>${item.canReadString} / ${item.canWriteString}</td>
+                                <td>${item.updateTime}</td>
+                            </tr>`;
+                            $('#replaceResults').append(row);
+                        });
+                    }
+                },
+                complete: function () {
+                    $button.prop('disabled', false).removeClass('wave-animation');
+                }
+            });
+        });
+
+        <!-- 替换 -->
+        $('#replaceButton').click(function () {
+            const $button = $(this);
+            const $errorAlert = $('#errorAlert');
+            const path = $('#path').val();
+            const from = $('#from').val();
+            const to = $('#to').val();
+            const replaceFileTypes = [];
+            $('input[name="replaceFileType"]:checked').each(function () {
+                replaceFileTypes.push($(this).val());
+            });
+
+            $button.prop('disabled', true).addClass('wave-animation');
+            $errorAlert.addClass('d-none').text('');
+            $('#replaceResults').empty();
+
+            const requestData = {path, from, to, replaceFileTypes};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/replace',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $errorAlert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        const data = response.data;
+                        $('#replaceResults').empty();
+                        data.forEach(function (item, index) {
+                            const $newFileName = item.newFileName || '-';
+                            const row = `<tr>
+                                <th scope="row">${index + 1}</th>
+                                <td>${item.oldFileName}</td>
+                                <td>${$newFileName}</td>
+                                <td>${item.fileSize}</td>
+                                <td>${item.fileType}</td>
+                                <td>${item.canReadString} / ${item.canWriteString}</td>
+                                <td>${item.updateTime}</td>
+                            </tr>`;
+                            $('#replaceResults').append(row);
+                        });
+                    } else {
+                        $errorAlert.text(response.message).removeClass('d-none');
+                    }
+                },
+                complete: function () {
+                    // Re-enable button and remove wave animation
+                    $button.prop('disabled', false).removeClass('wave-animation');
+                }
+            });
+        });
+
+        <!-- 移动和新建，列表 -->
+        $('#createMoveQueryButton').click(function () {
+            const $button = $(this);
+            const $alert = $('#createMoveAlert');
+            const createMovePath = $('#createMovePath').val();
+            // const from = $('#from').val();
+            // const to = $('#to').val();
+
+            $button.prop('disabled', true).addClass('wave-animation');
+            $alert.addClass('d-none').text('');
+            $('#createMoveResults').empty();
+
+            const requestData = {createMovePath};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/createMoveQuery',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $alert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        const data = response.data;
+                        data.forEach(function (item, index) {
+                            const row = `<tr>
+                                <th scope="row">${index + 1}</th>
+                                <td>${item.oldFileName}
+                                <td>${item.fileType}</td>
+                                <td>${item.fileSize}</td>
+                                <td>${item.canReadString} / ${item.canWriteString}</td>
+                                <td>${item.updateTime}</td>
+                            </tr>`;
+                            $('#createMoveResults').append(row);
+                        });
+                    }
+                },
+                complete: function () {
+                    $button.prop('disabled', false).removeClass('wave-animation');
+                }
+            });
+        });
+
+        <!-- 移动和新建 -->
+        $('#createMoveButton').click(function () {
+            const $button = $(this);
+            const $alert = $('#createMoveAlert');
+            const createMovePath = $('#createMovePath').val();
+
+            $button.prop('disabled', true).addClass('wave-animation');
+            $alert.addClass('d-none').text('');
+            $('#createMoveResults').empty();
+
+            const requestData = {createMovePath};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/createMove',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $alert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        const data = response.data;
+                        data.forEach(function (item, index) {
+                            const row = `<tr>
+                                <th scope="row">${index + 1}</th>
+                                <td>${item.oldFileName}
+                                <td>${item.fileType}</td>
+                                <td>${item.fileSize}</td>
+                                <td>${item.canReadString} / ${item.canWriteString}</td>
+                                <td>${item.updateTime}</td>
+                            </tr>`;
+                            $('#createMoveResults').append(row);
+                        });
+                    }
+                },
+                complete: function () {
+                    $button.prop('disabled', false).removeClass('wave-animation');
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
