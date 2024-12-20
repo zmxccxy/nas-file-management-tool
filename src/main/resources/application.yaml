@@ -1,0 +1,19 @@
+server:
+  port: 6996
+  servlet:
+    context-path: /nas-fmt
+
+spring:
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  file:
+    name: logs/nas-fmt.log
+  logback:
+    rolling-policy:
+      fileNamePattern: logs/nas-fmt-%d{yyyy-MM-dd}.%i.log
+      max-file-size: 10MB
+      max-history: 30
+      clean-history-on-start: false
