@@ -8,7 +8,7 @@ LABEL maintainer="zmxccxy <zmxccxy@aliyun.com>"
 WORKDIR /nas-fmt
 
 # 将打包后的 JAR 文件复制到容器中
-COPY target/nas-file-management-tool-0.8.1.jar /nas-fmt/nas-file-management-tool-0.8.1.jar
+COPY target/nas-file-management-tool-0.8.1.jar nas-file-management-tool-0.8.1.jar
 
 # 暴露端口
 EXPOSE 6996
