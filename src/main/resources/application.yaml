@@ -2,6 +2,8 @@ server:
   port: 6996
   servlet:
     context-path: /nas-fmt
+    encoding:
+      charset: UTF-8
 
 spring:
   output:

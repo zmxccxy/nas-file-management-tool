@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nas file management tool</title>
-    <link rel="icon" href="favicon.webp" type="image/webp">
+    <link rel="icon" href="favicon2.webp" type="image/webp">
     <link href="./css/bootstrap.min.css" rel="stylesheet">
     <script src="./js/bootstrap.bundle.min.js"></script>
     <script src="./js/jquery-3.6.4.min.js"></script>
@@ -210,16 +210,12 @@
             <div class="alert alert-success d-none" role="alert" id="errorAlert" aria-live="polite"></div>
             <div class="card">
                 <div class="card-body" style="max-height: 500px; overflow-y: auto;">
-                    <table class="table table-hover">
+                    <table class="table">
                         <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">替换前</th>
-                            <th scope="col">替换后</th>
-                            <th scope="col">类型</th>
-                            <th scope="col">大小</th>
-                            <th scope="col">读权限/写权限</th>
-                            <th scope="col">最后更新时间</th>
+                        <tr style="text-align: center">
+                            <th style="min-width: 50px" scope="col">#</th>
+                            <th scope="col">详情</th>
+                            <th style="min-width: 100px" scope="col">操作</th>
                         </tr>
                         </thead>
                         <tbody id="replaceResults"></tbody>
@@ -255,15 +251,11 @@
             <div id="createMoveAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
             <div class="card">
                 <div class="card-body" style="max-height: 500px; overflow-y: auto;">
-                    <table class="table table-hover">
+                    <table class="table">
                         <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">名称</th>
-                            <th scope="col">类型</th>
-                            <th scope="col">大小</th>
-                            <th scope="col">读权限/写权限</th>
-                            <th scope="col">最后更新时间</th>
+                        <tr style="text-align: center">
+                            <th style="width: 50px" scope="col">#</th>
+                            <th scope="col">详情</th>
                         </tr>
                         </thead>
                         <tbody id="createMoveResults"></tbody>
@@ -293,19 +285,42 @@
             <div id="deleteAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
             <div class="card">
                 <div class="card-body" style="max-height: 500px; overflow-y: auto;">
-                    <table class="table table-hover">
+                    <table class="table">
                         <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">名称</th>
-                            <th scope="col">类型</th>
-                            <th scope="col">大小</th>
-                            <th scope="col">读权限/写权限</th>
-                            <th scope="col">最后更新时间</th>
-                            <th scope="col">操作</th>
+                        <tr style="text-align: center">
+                            <th style="width: 50px" scope="col">#</th>
+                            <th scope="col">详情</th>
+                            <th style="width: 100px" scope="col">操作</th>
                         </tr>
                         </thead>
-                        <tbody id="deleteResults"></tbody>
+                        <tbody id="deleteResults">
+                        <tr>
+                            <td style="text-align: center;vertical-align: middle">1</td>
+                            <td>
+                                <div class="card" style="border: none">
+                                    <div class="row g-0">
+                                        <div style="align-content: center;" class="col-md-1">
+                                            <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                        </div>
+                                        <div class="col-md-11">
+                                            <div class="card-body">
+                                                <h5 class="card-title">22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22</h5>
+                                                <p class="card-text">
+                                                    <span style="margin-right: 5px" class="badge text-bg-primary">大小：0.00MB</span>
+                                                    <span style="margin-right: 5px" class="badge text-bg-success">类型：文件夹</span>
+                                                    <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：可读 / 可写</span>
+                                                </p>
+                                                <p class="card-text"><small class="text-muted">2024-12-26 15:46:10.644</small></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align: center;vertical-align: middle">
+                                <button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button>
+                            </td>
+                        </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -332,17 +347,12 @@
             <div id="duplicateAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
             <div class="card">
                 <div class="card-body" style="max-height: 500px; overflow-y: auto;">
-                    <table class="table table-hover">
+                    <table class="table">
                         <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">SHA256</th>
-                            <th scope="col">名称</th>
-                            <th scope="col">类型</th>
-                            <th scope="col">大小</th>
-                            <th scope="col">读权限/写权限</th>
-                            <th scope="col">最后更新时间</th>
-                            <th scope="col">操作</th>
+                        <tr style="text-align: center">
+                            <th style="width: 50px" scope="col">#</th>
+                            <th scope="col">详情</th>
+                            <th style="width: 100px" scope="col">操作</th>
                         </tr>
                         </thead>
                         <tbody id="duplicateResults"></tbody>
@@ -449,14 +459,29 @@
                         $('#deleteResults').empty();
                         data.forEach(function (item, index) {
                             const row = `<tr>
-                                <th>${index + 1}</th>
-                                <td>${item.sha256}</td>
-                                <td>${item.oldFileName}</td>
-                                <td>${item.fileSize}</td>
-                                <td>${item.fileType}</td>
-                                <td>${item.canReadString} / ${item.canWriteString}</td>
-                                <td>${item.updateTime}</td>
-                                <td><button id="duplicateButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
+                                <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
+                                <td>
+                                    <div class="card" style="border: none">
+                                        <div class="row g-0">
+                                            <div style="align-content: center;" class="col-md-1">
+                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">${item.oldFileName}</h6>
+                                                    <p style="margin-bottom: 5px" class="card-text">
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                    </p>
+                                                    <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">SHA256：${item.sha256}</small></p>
+                                                    <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">${item.updateTime}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;vertical-align: middle"><button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
                             </tr>`;
                             $('#duplicateResults').append(row);
                         });
@@ -525,114 +550,34 @@
                         $('#deleteResults').empty();
                         data.forEach(function (item, index) {
                             const row = `<tr>
-                                <th scope="row">${index + 1}</th>
-                                <td>${item.oldFileName}</td>
-                                <td>${item.fileSize}</td>
-                                <td>${item.fileType}</td>
-                                <td>${item.canReadString} / ${item.canWriteString}</td>
-                                <td>${item.updateTime}</td>
-                                <td><button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
+                                <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
+                                <td>
+                                    <div class="card" style="border: none">
+                                        <div class="row g-0">
+                                            <div style="align-content: center;" class="col-md-1">
+                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">${item.oldFileName}</h6>
+                                                    <p class="card-text">
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                    </p>
+                                                    <p class="card-text"><small class="text-muted">${item.updateTime}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;vertical-align: middle"><button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
                             </tr>`;
                             $('#deleteResults').append(row);
                         });
                     }
                 },
                 complete: function () {
-                    $button.prop('disabled', false).removeClass('wave-animation');
-                }
-            });
-        });
-
-        <!-- 替换，列表 -->
-        $('#replaceQueryButton').click(function () {
-            const $button = $(this);
-            const $errorAlert = $('#errorAlert');
-            const path = $('#path').val();
-
-            $button.prop('disabled', true).addClass('wave-animation');
-            $errorAlert.addClass('d-none').text('');
-            $('#replaceResults').empty();
-
-            const requestData = {path};
-
-            $.ajax({
-                url: window.location.href + 'api/v1/replaceQuery',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(requestData),
-                success: function (response) {
-                    $errorAlert.text(response.message).removeClass('d-none');
-                    if (response.code === 200) {
-                        const data = response.data;
-                        $('#replaceResults').empty();
-                        data.forEach(function (item, index) {
-                            const $newFileName = item.newFileName || '-';
-                            const row = `<tr>
-                                <th scope="row">${index + 1}</th>
-                                <td>${item.oldFileName}</td>
-                                <td>${$newFileName}</td>
-                                <td>${item.fileType}</td>
-                                <td>${item.fileSize}</td>
-                                <td>${item.canReadString} / ${item.canWriteString}</td>
-                                <td>${item.updateTime}</td>
-                            </tr>`;
-                            $('#replaceResults').append(row);
-                        });
-                    }
-                },
-                complete: function () {
-                    $button.prop('disabled', false).removeClass('wave-animation');
-                }
-            });
-        });
-
-        <!-- 替换 -->
-        $('#replaceButton').click(function () {
-            const $button = $(this);
-            const $errorAlert = $('#errorAlert');
-            const path = $('#path').val();
-            const from = $('#from').val();
-            const to = $('#to').val();
-            const replaceFileTypes = [];
-            $('input[name="replaceFileType"]:checked').each(function () {
-                replaceFileTypes.push($(this).val());
-            });
-
-            $button.prop('disabled', true).addClass('wave-animation');
-            $errorAlert.addClass('d-none').text('');
-            $('#replaceResults').empty();
-
-            const requestData = {path, from, to, replaceFileTypes};
-
-            $.ajax({
-                url: window.location.href + 'api/v1/replace',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(requestData),
-                success: function (response) {
-                    $errorAlert.text(response.message).removeClass('d-none');
-                    if (response.code === 200) {
-                        const data = response.data;
-                        $('#replaceResults').empty();
-                        data.forEach(function (item, index) {
-                            const $newFileName = item.newFileName || '-';
-                            const row = `<tr>
-                                <th scope="row">${index + 1}</th>
-                                <td>${item.oldFileName}</td>
-                                <td>${$newFileName}</td>
-                                <td>${item.fileSize}</td>
-                                <td>${item.fileType}</td>
-                                <td>${item.canReadString} / ${item.canWriteString}</td>
-                                <td>${item.updateTime}</td>
-                            </tr>`;
-                            $('#replaceResults').append(row);
-                        });
-                    } else {
-                        $errorAlert.text(response.message).removeClass('d-none');
-                    }
-                },
-                complete: function () {
-                    // Re-enable button and remove wave animation
                     $button.prop('disabled', false).removeClass('wave-animation');
                 }
             });
@@ -663,12 +608,27 @@
                         const data = response.data;
                         data.forEach(function (item, index) {
                             const row = `<tr>
-                                <th scope="row">${index + 1}</th>
-                                <td>${item.oldFileName}
-                                <td>${item.fileType}</td>
-                                <td>${item.fileSize}</td>
-                                <td>${item.canReadString} / ${item.canWriteString}</td>
-                                <td>${item.updateTime}</td>
+                                <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
+                                <td>
+                                    <div class="card" style="border: none">
+                                        <div class="row g-0">
+                                            <div style="align-content: center;" class="col-md-1">
+                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">${item.oldFileName}</h6>
+                                                    <p class="card-text">
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                    </p>
+                                                    <p class="card-text"><small class="text-muted">${item.updateTime}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>`;
                             $('#createMoveResults').append(row);
                         });
@@ -715,6 +675,133 @@
                     }
                 },
                 complete: function () {
+                    $button.prop('disabled', false).removeClass('wave-animation');
+                }
+            });
+        });
+
+        <!-- 替换，列表 -->
+        $('#replaceQueryButton').click(function () {
+            const $button = $(this);
+            const $errorAlert = $('#errorAlert');
+            const path = $('#path').val();
+
+            $button.prop('disabled', true).addClass('wave-animation');
+            $errorAlert.addClass('d-none').text('');
+            $('#replaceResults').empty();
+
+            const requestData = {path};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/replaceQuery',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $errorAlert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        const data = response.data;
+                        $('#replaceResults').empty();
+                        data.forEach(function (item, index) {
+                            const $newFileName = item.newFileName || '-';
+                            const row = `<tr>
+                                <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
+                                <td>
+                                    <div class="card" style="border: none">
+                                        <div class="row g-0">
+                                            <div style="align-content: center;" class="col-md-1">
+                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">${item.oldFileName}</h6>
+                                                    <p style="margin-bottom: 5px" class="card-text">
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                    </p>
+                                                    <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">替换前：${$newFileName}</small></p>
+                                                    <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">${item.updateTime}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;vertical-align: middle"><button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
+                            </tr>`;
+                            $('#replaceResults').append(row);
+                        });
+                    }
+                },
+                complete: function () {
+                    $button.prop('disabled', false).removeClass('wave-animation');
+                }
+            });
+        });
+
+        <!-- 替换 -->
+        $('#replaceButton').click(function () {
+            const $button = $(this);
+            const $errorAlert = $('#errorAlert');
+            const path = $('#path').val();
+            const from = $('#from').val();
+            const to = $('#to').val();
+            const replaceFileTypes = [];
+            $('input[name="replaceFileType"]:checked').each(function () {
+                replaceFileTypes.push($(this).val());
+            });
+
+            $button.prop('disabled', true).addClass('wave-animation');
+            $errorAlert.addClass('d-none').text('');
+            $('#replaceResults').empty();
+
+            const requestData = {path, from, to, replaceFileTypes};
+
+            $.ajax({
+                url: window.location.href + 'api/v1/replace',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $errorAlert.text(response.message).removeClass('d-none');
+                    if (response.code === 200) {
+                        const data = response.data;
+                        $('#replaceResults').empty();
+                        data.forEach(function (item, index) {
+                            const $oldFileName = item.oldFileName || '-';
+                            const row = `<tr>
+                                <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
+                                <td>
+                                    <div class="card" style="border: none">
+                                        <div class="row g-0">
+                                            <div style="align-content: center;" class="col-md-1">
+                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">${item.fileName}</h6>
+                                                    <p style="margin-bottom: 5px" class="card-text">
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                    </p>
+                                                    <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">替换前：${$oldFileName}</small></p>
+                                                    <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">${item.updateTime}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;vertical-align: middle"><button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
+                            </tr>`;
+                            $('#replaceResults').append(row);
+                        });
+                    } else {
+                        $errorAlert.text(response.message).removeClass('d-none');
+                    }
+                },
+                complete: function () {
+                    // Re-enable button and remove wave animation
                     $button.prop('disabled', false).removeClass('wave-animation');
                 }
             });

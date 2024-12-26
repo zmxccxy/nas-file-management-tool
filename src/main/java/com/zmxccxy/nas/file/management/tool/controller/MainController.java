@@ -7,7 +7,6 @@ import com.zmxccxy.nas.file.management.tool.pojo.FileInfo;
 import com.zmxccxy.nas.file.management.tool.util.SimpleFileVisitorUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.tika.Tika;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -239,9 +238,9 @@ public class MainController {
         List<FileInfo> results = new ArrayList<>();
         List<String> replaceFileTypes = commonRequest.getReplaceFileTypes();
         boolean all = replaceFileTypes == null || replaceFileTypes.isEmpty();
-        List<String> upperCaseReplaceFileTypes = Collections.emptyList();
+        List<String> replaceFileTypesUpperCase = Collections.emptyList();
         if (!all) {
-            upperCaseReplaceFileTypes = replaceFileTypes.stream().map(replaceFileType -> replaceFileType.toUpperCase(Locale.ROOT)).toList();
+            replaceFileTypesUpperCase = replaceFileTypes.stream().map(replaceFileType -> replaceFileType.toUpperCase(Locale.ROOT)).toList();
         }
         int allDicCount = 0;
         int allFileCount = 0;
@@ -249,7 +248,7 @@ public class MainController {
         int replaceSuccessCount = 0;
         for (File file : files) {
             FileInfo fileInfo = new FileInfo();
-            fileInfo.setOldFileName(file.getName());
+            fileInfo.setFileName(file.getName());
             String fileSize;
             if (file.isFile()) {
                 fileSize = String.format("%.2fMB", FileUtils.sizeOf(file) / 1024.0 / 1024.0);
@@ -266,33 +265,42 @@ public class MainController {
             fileInfo.setCanWrite(file.canWrite());
             results.add(fileInfo);
 
-            if (file.isDirectory()) {
-                continue;
-            }
-
             String fileName = file.getName();
-            int lastIndexOf = fileName.lastIndexOf(".") == -1 ? fileName.length() : fileName.lastIndexOf(".");
-            String extension = fileName.substring(lastIndexOf);
-            String name = fileName.substring(0, lastIndexOf);
-            if (!name.matches(from) && !name.contains(from)) {
+            String name;
+            String extension;
+            File newFile;
+            if (file.isFile()) {
+                int lastIndexOf = fileName.lastIndexOf(".") == -1 ? fileName.length() : fileName.lastIndexOf(".");
+                name = fileName.substring(0, lastIndexOf);
+                extension = fileName.substring(lastIndexOf);
+                newFile = new File(file.getParent(), name.replace(from, to) + extension);
+            } else {
+                extension = "";
+                name = fileName;
+                newFile = new File(file.getParent(), name.replace(from, to));
+            }
+            if (!name.contains(from)) {
                 continue;
             }
 
-            if (all || upperCaseReplaceFileTypes.contains(extension.toUpperCase(Locale.ROOT))) {
-                File newFile = new File(file.getParent(), name.replaceAll(from, to) + extension);
+            if (all || replaceFileTypesUpperCase.contains(extension.toUpperCase(Locale.ROOT))) {
                 boolean renameTo = file.renameTo(newFile);
                 if (renameTo) {
                     replaceSuccessCount++;
-                    fileInfo.setNewFileName(newFile.getName());
+                    fileInfo.setOldFileName(fileName);
+                    fileInfo.setFileName(newFile.getName());
                 } else {
                     replaceFailCount++;
-                    fileInfo.setNewFileName("操作系统不支持，命名失败！");
+                    fileInfo.setOldFileName("操作系统不支持，命名失败！");
+                    fileInfo.setFileName(fileName);
                 }
             }
         }
 
-        Thread.sleep(1000);
-        return CommonResponse.success(String.format("路径下有【%s】个文件夹【%s】个文件，对【%s】个文件命名成功【%s】命名失败！", allDicCount, allFileCount, replaceSuccessCount, replaceFailCount), results);
+        results.sort(Comparator.comparing(FileInfo::getUpdateTime).reversed());
+
+        Thread.sleep(500);
+        return CommonResponse.success(String.format("路径下有【%s】个文件夹【%s】个文件，对【%s】个文件/文件夹名替换成功，【%s】替换失败！", allDicCount, allFileCount, replaceSuccessCount, replaceFailCount), results);
     }
 
     @PostMapping("/v1/createMoveQuery")
@@ -398,24 +406,32 @@ public class MainController {
     }
 
     public static void main(String[] args) throws IOException {
+        File ff = new File("                       .txt");
+        System.out.println(ff.exists());
+        System.out.println(ff.getName());
 
-        Tika tika = new Tika();
-        String s = tika.detect("C:\\Users\\xx7x\\Downloads\\1.docx");
-        String s1 = s.split("/")[1];
+        String str = "1.1.1.1";
+        System.out.println(str.replace(".", " "));
+        System.out.println(str.replaceAll(".", " "));
+        System.out.println(str);
 
-        System.out.println(s);
-        System.out.println(s1);
+        File f = new File("D:\\test\\1111");
+        String parent = f.getParent();
+        File haoLe = new File(parent, "hao le");
+        boolean b = f.renameTo(haoLe);
+        System.out.println(b);
 
-        String sha256Hex = DigestUtils.sha256Hex(new FileInputStream("D:\\test\\666\\11.txt"));
+        String sha256Hex = DigestUtils.sha256Hex(new FileInputStream("D:\\test\\1111hao le\\1.txt"));
         System.out.println(sha256Hex);
 
-        String dic = "D:\\test\\1";
+        String dic = "D:\\test\\1111hao le";
         File file = new File(dic);
         System.out.println(file.getName());
         System.out.println(file.getParent());
         System.out.println(file.getPath());
         System.out.println(file.getParentFile().getName());
-        file.renameTo(new File(file.getParent(), "666"));
+        boolean b1 = file.renameTo(new File(file.getParent(), "666"));
+        System.out.println(b1);
     }
 
 }
