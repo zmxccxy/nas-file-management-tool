@@ -43,3 +43,10 @@ CMD ["-Xmx512m"]
 
 # 打包时清理（删除不必要的缓存）
 RUN rm -rf /var/cache/apk/*
+
+# 构建多个平台的命令
+export HTTP_PROXY=http://127.0.0.1:7890
+export HTTPS_PROXY=http://127.0.0.1:7890
+创建构建器（执行一次）：docker buildx create --use --driver docker-container --name multi-builder --platform linux/amd64,linux/arm64
+构建并推送： docker buildx build --platform linux/amd64,linux/arm64 -t zmxccxy/nas-file-management-tool:0.8.1 --push .
+验证：docker buildx imagetools inspect zmxccxy/nas-file-management-tool:0.8.1
