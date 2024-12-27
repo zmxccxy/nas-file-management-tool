@@ -131,7 +131,7 @@
             <button class="nav-link" id="duplicate-tab" data-bs-toggle="tab" data-bs-target="#duplicate" type="button" role="tab" aria-controls="duplicate" aria-selected="false">去重</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="clone-tab" data-bs-toggle="tab" data-bs-target="#clone" type="button" role="tab" aria-controls="clone" aria-selected="false">克隆</button>
+            <button class="nav-link" id="clone-tab" data-bs-toggle="tab" data-bs-target="#clone" type="button" role="tab" aria-controls="clone" aria-selected="false">克隆（暂未实现）</button>
         </li>
     </ul>
 
@@ -172,7 +172,7 @@
                 </div>
                 <div>
                     <div class="form-check form-check-inline" style="padding-left: 0">
-                        文件类型(不勾选默认所有类型的文件):
+                        文件类型(不勾选默认所有类型的文件&文件夹):
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" name="replaceFileType" type="checkbox" value="mp4" id="mp4">
@@ -209,13 +209,12 @@
             <h6 class="mt-4" style="font-weight: bold">结果</h6>
             <div class="alert alert-success d-none" role="alert" id="errorAlert" aria-live="polite"></div>
             <div class="card">
-                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                <div class="card-body" style="">
                     <table class="table">
                         <thead>
                         <tr style="text-align: center">
-                            <th style="min-width: 50px" scope="col">#</th>
+                            <th style="width: 50px" scope="col">#</th>
                             <th scope="col">详情</th>
-                            <th style="min-width: 100px" scope="col">操作</th>
                         </tr>
                         </thead>
                         <tbody id="replaceResults"></tbody>
@@ -250,7 +249,7 @@
             <h6 class="mt-4" style="font-weight: bold">结果</h6>
             <div id="createMoveAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
             <div class="card">
-                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                <div class="card-body" style="">
                     <table class="table">
                         <thead>
                         <tr style="text-align: center">
@@ -284,7 +283,7 @@
             <h6 class="mt-4" style="font-weight: bold">结果</h6>
             <div id="deleteAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
             <div class="card">
-                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                <div class="card-body" style="">
                     <table class="table">
                         <thead>
                         <tr style="text-align: center">
@@ -294,32 +293,6 @@
                         </tr>
                         </thead>
                         <tbody id="deleteResults">
-                        <tr>
-                            <td style="text-align: center;vertical-align: middle">1</td>
-                            <td>
-                                <div class="card" style="border: none">
-                                    <div class="row g-0">
-                                        <div style="align-content: center;" class="col-md-1">
-                                            <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
-                                        </div>
-                                        <div class="col-md-11">
-                                            <div class="card-body">
-                                                <h5 class="card-title">22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22 22</h5>
-                                                <p class="card-text">
-                                                    <span style="margin-right: 5px" class="badge text-bg-primary">大小：0.00MB</span>
-                                                    <span style="margin-right: 5px" class="badge text-bg-success">类型：文件夹</span>
-                                                    <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：可读 / 可写</span>
-                                                </p>
-                                                <p class="card-text"><small class="text-muted">2024-12-26 15:46:10.644</small></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td style="text-align: center;vertical-align: middle">
-                                <button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button>
-                            </td>
-                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -346,7 +319,7 @@
             <h6 class="mt-4" style="font-weight: bold">结果</h6>
             <div id="duplicateAlert" class="alert alert-success d-none" role="alert" aria-live="polite"></div>
             <div class="card">
-                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                <div class="card-body" style="">
                     <table class="table">
                         <thead>
                         <tr style="text-align: center">
@@ -458,22 +431,24 @@
                         const data = response.data;
                         $('#deleteResults').empty();
                         data.forEach(function (item, index) {
+                            const iconFile = item.fileType === '文件夹' ? 'img/folder.png' : 'img/file.png';
                             const row = `<tr>
                                 <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
                                 <td>
                                     <div class="card" style="border: none">
                                         <div class="row g-0">
-                                            <div style="align-content: center;" class="col-md-1">
-                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            <div style="align-content: center; width: 50px" class="col-md-1">
+                                                <img src="${iconFile}" class="img-fluid" alt="你自己看着办">
                                             </div>
                                             <div class="col-md-11">
                                                 <div class="card-body">
-                                                    <h6 class="card-title">${item.oldFileName}</h6>
+                                                    <h5 class="card-title" style="white-space: pre;">${item.fileName}</h5>
                                                     <p style="margin-bottom: 5px" class="card-text">
-                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                     </p>
+                                                    <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">路径：${item.filePath}</small></p>
                                                     <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">SHA256：${item.sha256}</small></p>
                                                     <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">${item.updateTime}</small></p>
                                                 </div>
@@ -549,21 +524,22 @@
                         const data = response.data;
                         $('#deleteResults').empty();
                         data.forEach(function (item, index) {
+                            const iconFile = item.fileType === '文件夹' ? 'img/folder.png' : 'img/file.png';
                             const row = `<tr>
                                 <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
                                 <td>
                                     <div class="card" style="border: none">
                                         <div class="row g-0">
-                                            <div style="align-content: center;" class="col-md-1">
-                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            <div style="align-content: center; width: 50px" class="col-md-1">
+                                                <img src="${iconFile}" class="img-fluid" alt="你自己看着办">
                                             </div>
                                             <div class="col-md-11">
                                                 <div class="card-body">
-                                                    <h6 class="card-title">${item.oldFileName}</h6>
+                                                    <h5 class="card-title" style="white-space: pre;">${item.fileName}</h5>
                                                     <p class="card-text">
-                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                     </p>
                                                     <p class="card-text"><small class="text-muted">${item.updateTime}</small></p>
                                                 </div>
@@ -607,21 +583,22 @@
                     if (response.code === 200) {
                         const data = response.data;
                         data.forEach(function (item, index) {
+                            const iconFile = item.fileType === '文件夹' ? 'img/folder.png' : 'img/file.png';
                             const row = `<tr>
                                 <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
                                 <td>
                                     <div class="card" style="border: none">
                                         <div class="row g-0">
-                                            <div style="align-content: center;" class="col-md-1">
-                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            <div style="align-content: center; width: 50px" class="col-md-1">
+                                                <img src="${iconFile}" class="img-fluid" alt="你自己看着办">
                                             </div>
                                             <div class="col-md-11">
                                                 <div class="card-body">
-                                                    <h6 class="card-title">${item.oldFileName}</h6>
+                                                    <h5 class="card-title" style="white-space: pre;">${item.fileName}</h5>
                                                     <p class="card-text">
-                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                     </p>
                                                     <p class="card-text"><small class="text-muted">${item.updateTime}</small></p>
                                                 </div>
@@ -662,13 +639,29 @@
                     if (response.code === 200) {
                         const data = response.data;
                         data.forEach(function (item, index) {
+                            const iconFile = item.fileType === '文件夹' ? 'img/folder.png' : 'img/file.png';
                             const row = `<tr>
-                                <th scope="row">${index + 1}</th>
-                                <td>${item.oldFileName}
-                                <td>${item.fileType}</td>
-                                <td>${item.fileSize}</td>
-                                <td>${item.canReadString} / ${item.canWriteString}</td>
-                                <td>${item.updateTime}</td>
+                                <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
+                                <td>
+                                    <div class="card" style="border: none">
+                                        <div class="row g-0">
+                                            <div style="align-content: center; width: 50px" class="col-md-1">
+                                                <img src="${iconFile}" class="img-fluid" alt="你自己看着办">
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="card-body">
+                                                    <h5 class="card-title" style="white-space: pre;">${item.fileName}</h5>
+                                                    <p class="card-text">
+                                                        <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
+                                                    </p>
+                                                    <p class="card-text"><small class="text-muted">${item.updateTime}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>`;
                             $('#createMoveResults').append(row);
                         });
@@ -704,21 +697,22 @@
                         $('#replaceResults').empty();
                         data.forEach(function (item, index) {
                             const $newFileName = item.newFileName || '-';
+                            const iconFile = item.fileType === '文件夹' ? 'img/folder.png' : 'img/file.png';
                             const row = `<tr>
                                 <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
                                 <td>
                                     <div class="card" style="border: none">
                                         <div class="row g-0">
-                                            <div style="align-content: center;" class="col-md-1">
-                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            <div style="align-content: center; width: 50px" class="col-md-1">
+                                                <img src="${iconFile}" class="img-fluid" alt="你自己看着办">
                                             </div>
                                             <div class="col-md-11">
                                                 <div class="card-body">
-                                                    <h6 class="card-title">${item.oldFileName}</h6>
+                                                    <h5 class="card-title" style="white-space: pre;">${item.fileName}</h5>
                                                     <p style="margin-bottom: 5px" class="card-text">
-                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-warning">读写权限：${item.canReadString} / ${item.canWriteString}</span>
+                                                        <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                     </p>
                                                     <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">替换前：${$newFileName}</small></p>
                                                     <p style="margin-bottom: 5px" class="card-text"><small class="text-muted">${item.updateTime}</small></p>
@@ -727,7 +721,6 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td style="text-align: center;vertical-align: middle"><button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
                             </tr>`;
                             $('#replaceResults').append(row);
                         });
@@ -769,17 +762,18 @@
                         $('#replaceResults').empty();
                         data.forEach(function (item, index) {
                             const $oldFileName = item.oldFileName || '-';
+                            const iconFile = item.fileType === '文件夹' ? 'img/folder.png' : 'img/file.png';
                             const row = `<tr>
                                 <th style="text-align: center;vertical-align: middle" scope="row">${index + 1}</th>
                                 <td>
                                     <div class="card" style="border: none">
                                         <div class="row g-0">
-                                            <div style="align-content: center;" class="col-md-1">
-                                                <img src="favicon.webp" class="img-fluid" alt="你自己看着办">
+                                            <div style="align-content: center; width: 50px" class="col-md-1">
+                                                <img src="${iconFile}" class="img-fluid" alt="你自己看着办">
                                             </div>
                                             <div class="col-md-11">
                                                 <div class="card-body">
-                                                    <h6 class="card-title">${item.fileName}</h6>
+                                                    <h5 class="card-title">${item.fileName}</h5>
                                                     <p style="margin-bottom: 5px" class="card-text">
                                                         <span style="margin-right: 5px" class="badge text-bg-primary">大小：${item.fileSize}</span>
                                                         <span style="margin-right: 5px" class="badge text-bg-success">类型：${item.fileType}</span>
@@ -792,7 +786,6 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td style="text-align: center;vertical-align: middle"><button id="deleteButton" value="${item.filePath}" type="button" class="btn btn-danger">删除</button></td>
                             </tr>`;
                             $('#replaceResults').append(row);
                         });

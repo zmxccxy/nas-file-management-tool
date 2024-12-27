@@ -43,7 +43,6 @@ public class MainController {
         SimpleFileVisitorUtil fileVisitorUtil = new SimpleFileVisitorUtil();
         Files.walkFileTree(deleteFile.toPath(), fileVisitorUtil);
 
-        Thread.sleep(1000);
         return CommonResponse.success(
                 String.format("删除了【%s】个文件，【%s】个删除失败%s",
                         fileVisitorUtil.getFileSuccessCount(),
@@ -64,46 +63,25 @@ public class MainController {
         Assert.isTrue(dic.canRead(), "没有读权限");
         Assert.isTrue(dic.canWrite(), "没有写权限");
 
-        File[] files = dic.listFiles();
-        Assert.notNull(files, "没有获取到路径下的内容");
-        Assert.noNullElements(files, "路径下的内容为空");
-
         List<FileInfo> list = new ArrayList<>();
         int allDicCount = 0;
         int allFileCount = 0;
-        for (File file : files) {
-            FileInfo fileInfo = new FileInfo();
-            fileInfo.setOldFileName(file.getName());
-            fileInfo.setFilePath(file.getAbsolutePath());
-            String fileSize;
-            if (file.isFile()) {
-                fileSize = String.format("%.2fMB", FileUtils.sizeOf(file) / 1024.0 / 1024.0);
-                fileInfo.setFileType(MimeEnum.getExplainByMimeType(Files.probeContentType(file.toPath())));
-                fileInfo.setSha256(DigestUtils.sha256Hex(Files.readAllBytes(file.toPath())));
-                allFileCount++;
-            } else {
-                fileSize = String.format("%.2fMB", FileUtils.sizeOfDirectory(file) / 1024.0 / 1024.0);
-                fileInfo.setFileType("文件夹");
-                allDicCount++;
-            }
-            fileInfo.setFileSize(fileSize);
-            fileInfo.setUpdateTime(Instant.ofEpochMilli(file.lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
-            fileInfo.setCanRead(file.canRead());
-            fileInfo.setCanWrite(file.canWrite());
-            list.add(fileInfo);
-        }
+
+        processFiles(dic, list);
 
         List<FileInfo> results = new ArrayList<>();
         Map<String, List<FileInfo>> sha256GroupMap = list.stream()
                 .filter(fileInfo -> StringUtils.hasText(fileInfo.getSha256()))
                 .collect(Collectors.groupingBy(FileInfo::getSha256));
+
         for (Map.Entry<String, List<FileInfo>> entry : sha256GroupMap.entrySet()) {
             if (entry.getValue().size() > 1) {
                 results.addAll(entry.getValue());
             }
         }
 
-        Thread.sleep(1000);
+        results.sort(Comparator.comparing(FileInfo::getUpdateTime).reversed());
+
         return CommonResponse.success(String.format("路径下有【%s】个文件夹【%s】个文件，【%s】个重复文件", allDicCount, allFileCount, results.size()), results);
     }
 
@@ -120,7 +98,6 @@ public class MainController {
         SimpleFileVisitorUtil fileVisitorUtil = new SimpleFileVisitorUtil();
         Files.walkFileTree(deleteFile.toPath(), fileVisitorUtil);
 
-        Thread.sleep(1000);
         return CommonResponse.success(
                 String.format("删除了【%s】个文件夹【%s】个文件，【%s】个删除失败%s",
                         fileVisitorUtil.getDicSuccessCount(),
@@ -152,6 +129,7 @@ public class MainController {
         for (File file : files) {
             FileInfo fileInfo = new FileInfo();
             fileInfo.setOldFileName(file.getName());
+            fileInfo.setFileName(file.getName());
             fileInfo.setFilePath(file.getAbsolutePath());
             String fileSize;
             if (file.isFile()) {
@@ -170,7 +148,8 @@ public class MainController {
             results.add(fileInfo);
         }
 
-        Thread.sleep(1000);
+        results.sort(Comparator.comparing(FileInfo::getFileSize));
+
         return CommonResponse.success(String.format("路径下有【%s】个文件夹【%s】个文件", allDicCount, allFileCount), results);
     }
 
@@ -195,6 +174,7 @@ public class MainController {
         for (File file : files) {
             FileInfo fileInfo = new FileInfo();
             fileInfo.setOldFileName(file.getName());
+            fileInfo.setFileName(file.getName());
             String fileSize;
             if (file.isFile()) {
                 fileSize = String.format("%.2fMB", FileUtils.sizeOf(file) / 1024.0 / 1024.0);
@@ -212,7 +192,8 @@ public class MainController {
             results.add(fileInfo);
         }
 
-        Thread.sleep(1000);
+        results.sort(Comparator.comparing(FileInfo::getUpdateTime).reversed());
+
         return CommonResponse.success(String.format("路径下有【%s】个文件夹【%s】个文件", allDicCount, allFileCount), results);
     }
 
@@ -299,7 +280,6 @@ public class MainController {
 
         results.sort(Comparator.comparing(FileInfo::getUpdateTime).reversed());
 
-        Thread.sleep(500);
         return CommonResponse.success(String.format("路径下有【%s】个文件夹【%s】个文件，对【%s】个文件/文件夹名替换成功，【%s】替换失败！", allDicCount, allFileCount, replaceSuccessCount, replaceFailCount), results);
     }
 
@@ -344,8 +324,6 @@ public class MainController {
 
         results.sort(Comparator.comparing(FileInfo::getUpdateTime).reversed());
 
-        Thread.sleep(1000);
-
         return CommonResponse.success(String.format("路径下有【%s】个文件夹【%s】个文件", dicCount, fileCount), results);
     }
 
@@ -369,7 +347,7 @@ public class MainController {
         for (File file : files) {
             if (file.isFile()) {
                 String name = file.getName().substring(0, file.getName().lastIndexOf("."));
-                File newDic = new File(dic, name);
+                File newDic = new File(dic, name.trim());
                 FileUtils.moveFileToDirectory(file, newDic, true);
                 moveCount++;
             } else {
@@ -399,8 +377,6 @@ public class MainController {
         }
 
         results.sort(Comparator.comparing(FileInfo::getFileSize).reversed());
-
-        Thread.sleep(1000);
 
         return CommonResponse.success(String.format("路径下有【%s】个文件夹【%s】个文件，对【%s】个文件进行了创建文件夹并移动文件至此文件夹！", dicCount, moveCount, moveCount), results);
     }
@@ -432,6 +408,38 @@ public class MainController {
         System.out.println(file.getParentFile().getName());
         boolean b1 = file.renameTo(new File(file.getParent(), "666"));
         System.out.println(b1);
+    }
+
+    private void processFiles(File directory, List<FileInfo> list) throws IOException {
+        File[] files = directory.listFiles();
+        Assert.notNull(files, "没有获取到路径下的内容");
+        Assert.noNullElements(files, "路径下的内容为空");
+
+        for (File file : files) {
+            FileInfo fileInfo = new FileInfo();
+            fileInfo.setOldFileName(file.getName());
+            fileInfo.setFileName(file.getName());
+            fileInfo.setFilePath(file.getAbsolutePath());
+            fileInfo.setUpdateTime(Instant.ofEpochMilli(file.lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
+            fileInfo.setCanRead(file.canRead());
+            fileInfo.setCanWrite(file.canWrite());
+            if (file.isDirectory()) {
+                fileInfo.setFileType("文件夹");
+                fileInfo.setFileSize(String.format("%.2fMB", FileUtils.sizeOfDirectory(file) / 1024.0 / 1024.0));
+                fileInfo.setCanRead(file.canRead());
+                fileInfo.setCanWrite(file.canWrite());
+
+                list.add(fileInfo);
+
+                processFiles(file, list);
+            } else {
+                fileInfo.setFileSize(String.format("%.2fMB", FileUtils.sizeOf(file) / 1024.0 / 1024.0));
+                fileInfo.setFileType(MimeEnum.getExplainByMimeType(Files.probeContentType(file.toPath())));
+                fileInfo.setSha256(DigestUtils.sha256Hex(Files.readAllBytes(file.toPath())));
+
+                list.add(fileInfo);
+            }
+        }
     }
 
 }
